@@ -49,6 +49,14 @@ export class ContractOffersService {
     return result.rows;
   }
 
+  async countByContract(): Promise<{ contract_id: string; count: number }[]> {
+    this.logger.log('Fetching contract offer counts grouped by contract');
+    const result = await this.pool.query<{ contract_id: string; count: string }>(
+      'SELECT contract_id, COUNT(*) AS count FROM contract_offers WHERE state = 0 GROUP BY contract_id',
+    );
+    return result.rows.map((row) => ({ contract_id: row.contract_id, count: Number(row.count) }));
+  }
+
   async create(dto: CreateContractOfferDto): Promise<ContractOfferEntity> {
     this.logger.log(`Creating contract offer for contract_id="${dto.contract_id}"`);
     const result = await this.pool.query<ContractOfferEntity>(

@@ -14,7 +14,8 @@ import {
     LineChartOutlined,
     BarChartOutlined,
     MobileOutlined,
-    DollarOutlined
+    DollarOutlined,
+    MedicineBoxOutlined
 } from "@ant-design/icons";
 import {usePageHeader} from "@/components/layout/PageHeaderContext";
 import PageTabs from "@/components/layout/PageTabs";
@@ -186,6 +187,12 @@ export default function BillsPage() {
             label: "Rent",
             icon: <DollarOutlined/>,
             content: <BillTab type={BillType.Rent} onEdit={handleEdit} onDelete={handleDelete}/>,
+        },
+        {
+            key: BillType.HealthCare,
+            label: "Health Care",
+            icon: <MedicineBoxOutlined/>,
+            content: <BillTab type={BillType.HealthCare} onEdit={handleEdit} onDelete={handleDelete}/>,
         },
     ];
 

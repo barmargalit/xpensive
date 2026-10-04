@@ -44,9 +44,9 @@ export default function Sidebar() {
             children: [
                 {key: "/bills", label: "Bills", icon: <CreditCardOutlined/>},
                 {key: "/usage", icon: <ThunderboltOutlined/>, label: "Usage"},
-                {key: "/providers", icon: <TeamOutlined/>, label: "Providers"},
-                {key: "/prices", icon: <StockOutlined/>, label: "Prices"},
                 {key: "/contracts", icon: <FileTextOutlined/>, label: "Contracts"},
+                {key: "/prices", icon: <StockOutlined/>, label: "Prices"},
+                {key: "/providers", icon: <TeamOutlined/>, label: "Providers"},
             ],
         },
         {

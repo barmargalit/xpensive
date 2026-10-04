@@ -5,6 +5,11 @@ import { ContractOffersService, CreateContractOfferDto, UpdateContractOfferDto }
 export class ContractOffersController {
   constructor(private readonly contractOffersService: ContractOffersService) {}
 
+  @Get('counts')
+  countByContract() {
+    return this.contractOffersService.countByContract();
+  }
+
   @Get()
   findByContract(@Query('contract_id') contractId: string) {
     return this.contractOffersService.findByContract(contractId);

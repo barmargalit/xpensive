@@ -5,6 +5,7 @@ import {Button} from "antd";
 import {PlusOutlined, ReloadOutlined} from "@ant-design/icons";
 import {usePageHeader} from "@/components/layout/PageHeaderContext";
 import {useContractsStore} from "@/store/contractsStore";
+import {useContractOffersStore} from "@/store/contractOffersStore";
 import {useProvidersStore} from "@/store/providersStore";
 import {useResidencesStore} from "@/store/residencesStore";
 import {useResidentsStore} from "@/store/residentsStore";
@@ -25,12 +26,14 @@ export default function ContractsPage() {
     const {providers, fetchAll: fetchProviders} = useProvidersStore();
     const {residences, fetchAll: fetchResidences} = useResidencesStore();
     const {residents, fetchAll: fetchResidents} = useResidentsStore();
+    const {countsByContract, fetchCounts} = useContractOffersStore();
 
     useEffect(() => {
         fetchAll();
         fetchProviders();
         fetchResidences();
         fetchResidents();
+        fetchCounts();
     }, []);
 
     const handleEdit = (contract: Contract) => {
@@ -77,6 +80,7 @@ export default function ContractsPage() {
                 providers={providers}
                 residences={residences}
                 residents={residents}
+                offerCounts={countsByContract}
                 onEdit={handleEdit}
                 onCompare={handleCompare}
             />

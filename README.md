@@ -9,7 +9,7 @@ A personal home management app for tracking household bills, monitoring utility 
 ## Features
 
 ### Bill Tracking
-Track recurring and one-off household expenses across eight bill types:
+Track recurring and one-off household expenses across nine bill types:
 
 | Type | Extra data captured |
 |---|---|
@@ -21,6 +21,7 @@ Track recurring and one-off household expenses across eight bill types:
 | Building Fee | — |
 | Cellular | — |
 | Rent | — |
+| Health Care | — |
 
 - Attach a **provider**, **residence**, **resident**, and **contract** to each bill
 - Selecting a contract auto-fills the provider, residence/resident, and monthly price — the contract selector is grouped by **Active** / **Ended**
@@ -35,6 +36,7 @@ Track service provider contracts (cellular plans, internet subscriptions, and mo
 - Optionally linked to a **residence** or a **resident**
 - **Expiry alerts** — contracts expiring in the next 2 months are highlighted with a warning row colour and icon in the table, and surfaced as an alert banner on the Contracts page and the home dashboard
 - Filter the tables by provider, type, and date ranges; a **refresh** button next to "New" in the page header re-fetches the list
+- An **Offers** column shows the total number of offers logged against each contract, sortable
 - Deleting a contract is done from the **edit modal** (Delete button with a confirmation popover), not from the table row
 - **Compare Offers** — log competing offers from other providers against a contract and compare them side by side against the current terms (price delta, data/speed deltas, status)
   - Accepting an offer no longer overwrites the contract: it prompts for an **effective date** (and an optional **end date**, with 6/12/18/24-month quick-select presets anchored to the effective date), closes out the previous contract the day before, and creates a brand-new contract row with the offer's terms — so historical pricing is preserved instead of being lost
@@ -265,7 +267,7 @@ for f in apps/main-service/src/migrations/*.sql; do
 done
 ```
 
-Or apply them one by one using your preferred PostgreSQL client. The migration files are sequential — they must be run in order (001 → 033).
+Or apply them one by one using your preferred PostgreSQL client. The migration files are sequential — they must be run in order (001 → 034).
 
 ### 6. Build the shared types package
 

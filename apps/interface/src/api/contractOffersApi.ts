@@ -41,6 +41,9 @@ export const contractOffersApi = {
   fetchByContract: (contractId: string): Promise<ContractOffer[]> =>
     request<ContractOffer[]>(`/contract-offers?contract_id=${contractId}`),
 
+  fetchCounts: (): Promise<{ contract_id: string; count: number }[]> =>
+    request<{ contract_id: string; count: number }[]>("/contract-offers/counts"),
+
   create: (payload: CreateContractOfferPayload): Promise<ContractOffer> =>
     request<ContractOffer>("/contract-offers", { method: "POST", body: JSON.stringify(payload) }),
 
