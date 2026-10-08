@@ -22,7 +22,8 @@ services:
       context: .
       dockerfile: apps/interface/Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: http://192.168.50.49:3001
+        #        NEXT_PUBLIC_API_URL: http://192.168.50.49:3001
+        NEXT_PUBLIC_API_URL: http://localhost:3001
     restart: unless-stopped
     ports:
       - "3000:3000"

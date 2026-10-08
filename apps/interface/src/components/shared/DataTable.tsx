@@ -8,10 +8,10 @@ const pagination: TablePaginationConfig = {
   showSizeChanger: false,
 };
 
-export default function DataTable<T extends object>(props: TableProps<T>) {
+export default function DataTable<T extends object>({ size = "middle", ...props }: TableProps<T>) {
   return (
     <Table<T>
-      size="middle"
+      size={size}
       pagination={pagination}
       scroll={{ x: "max-content" }}
       sticky={{ offsetHeader: 0 }}

@@ -1,15 +1,15 @@
-.splitLayout {
+.page {
     display: flex;
     flex-direction: column;
     height: 100%;
     overflow: hidden;
 }
 
-.chartPane {
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-    box-sizing: border-box;
+.toolbar {
+    display: flex;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    padding-bottom: 12px;
 }
 
 .tablePane {
@@ -18,13 +18,25 @@
     overflow: auto;
 }
 
+.chartPane {
+    height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
 .chartTabs {
     flex: 1;
     min-height: 0;
+    overflow: hidden;
 }
 
 .chartTabs :global(.ant-tabs-content-holder) {
     overflow: hidden;
+    height: 100%;
+}
+
+.chartTabs :global(.ant-tabs-content) {
+    height: 100%;
 }
 
 .chartTabs :global(.ant-tabs-tabpane) {

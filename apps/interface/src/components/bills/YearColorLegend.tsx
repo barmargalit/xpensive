@@ -48,17 +48,17 @@ interface Props {
 
 export default function YearColorLegend({yearsAsc, yearColors, onColorChange}: Props) {
     return (
-        <Space style={{marginTop: 8, flexWrap: "wrap", justifyContent: "center", width: "100%"}}>
+        <Space style={{flexWrap: "wrap", justifyContent: "center", width: "100%"}} size={10}>
             {[...yearsAsc].reverse().map((year) => (
-                    <Space key={year} size={4}>
-                        <ColorPicker
-                            size="small"
-                            value={colorForYear(year, yearColors)}
-                            onChange={(_, hex) => onColorChange(year, hex)}
-                            disabledAlpha
-                        />
-                        <Typography.Text style={{fontSize: 12}}>{year}</Typography.Text>
-                    </Space>
+                <Space key={year} size={4}>
+                    <ColorPicker
+                        size="small"
+                        value={colorForYear(year, yearColors)}
+                        onChange={(_, hex) => onColorChange(year, hex)}
+                        disabledAlpha
+                    />
+                    <Typography.Text style={{fontSize: 12}}>{year}</Typography.Text>
+                </Space>
             ))}
         </Space>
     );

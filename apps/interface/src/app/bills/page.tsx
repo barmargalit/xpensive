@@ -1,7 +1,7 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import {Button, Divider, Tabs} from "antd";
+import {Button, Drawer, Tabs} from "antd";
 import {
     PlusOutlined,
     ReloadOutlined,
@@ -43,6 +43,7 @@ function BillTab({type, showUsage, groupByResidence, onEdit, onDelete}: BillTabP
     const {residences, fetchAll: fetchResidences} = useResidencesStore();
     const {residents, fetchAll: fetchResidents} = useResidentsStore();
     const data = bills[type] ?? [];
+    const [chartOpen, setChartOpen] = useState(false);
 
     useEffect(() => {
         fetchByType(type);
@@ -50,30 +51,13 @@ function BillTab({type, showUsage, groupByResidence, onEdit, onDelete}: BillTabP
         fetchResidents();
     }, [type]);
 
-    const chartPane = (
-        <Tabs
-            tabPlacement={"start"}
-            size="small"
-            className={styles.chartTabs}
-            items={[
-                ...(showUsage ? [{
-                    key: "usage",
-                    label: <span><BarChartOutlined/> Usage</span>,
-                    children: <div className={styles.chartPane}><UsageChart data={data}/></div>,
-                }] : []),
-                {
-                    key: "price",
-                    label: <span><LineChartOutlined/> Price</span>,
-                    children: <div className={styles.chartPane}><PriceChart data={data}/></div>,
-                },
-            ]}
-        />
-    );
-
     return (
-        <div className={styles.splitLayout}>
-            {chartPane}
-            <Divider/>
+        <div className={styles.page}>
+            <div className={styles.toolbar}>
+                <Button icon={<BarChartOutlined/>} onClick={() => setChartOpen(true)}>
+                    Charts
+                </Button>
+            </div>
             <div className={styles.tablePane}>
                 <BillsTable
                     data={data}
@@ -87,6 +71,33 @@ function BillTab({type, showUsage, groupByResidence, onEdit, onDelete}: BillTabP
                     onDelete={onDelete}
                 />
             </div>
+            <Drawer
+                title="Charts"
+                placement="bottom"
+                size="60%"
+                open={chartOpen}
+                onClose={() => setChartOpen(false)}
+                destroyOnHidden
+                styles={{body: {padding: 16, display: "flex", flexDirection: "column"}}}
+            >
+                <Tabs
+                    tabPlacement={"start"}
+                    size="small"
+                    className={styles.chartTabs}
+                    items={[
+                        ...(showUsage ? [{
+                            key: "usage",
+                            label: <span><BarChartOutlined/> Usage</span>,
+                            children: <div className={styles.chartPane}><UsageChart data={data}/></div>,
+                        }] : []),
+                        {
+                            key: "price",
+                            label: <span><LineChartOutlined/> Price</span>,
+                            children: <div className={styles.chartPane}><PriceChart data={data}/></div>,
+                        },
+                    ]}
+                />
+            </Drawer>
         </div>
     );
 }
