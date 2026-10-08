@@ -43,7 +43,7 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
         theme={{
           algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
           token: {
-            colorPrimary: colors.brand.primary,
+            colorPrimary: isDark ? colors.brand.palette.mid : colors.brand.primary,
             colorBorderSecondary: colors.brand.palette.lighter,
             colorSplit: colors.brand.palette.lighter,
           },

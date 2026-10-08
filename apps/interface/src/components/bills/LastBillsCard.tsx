@@ -7,6 +7,8 @@ import {Bill, BillType, ElectricBillData, WaterBillData} from "@xpensive/types";
 import {useBillsStore} from "@/store/billsStore";
 import {BILL_TYPE_LABEL, BillTypeTag} from "@/lib/billTypes";
 import {billDurationMonths, fmtPrice} from "@/lib/billUtils";
+import {useTheme} from "@/components/layout/ThemeProvider";
+import {colors} from "@/globals";
 import styles from "./LastBillsCard.module.css";
 
 const {Text} = Typography;
@@ -54,6 +56,8 @@ function groupBillsByType(bills: Bill[]): BillGroup[] {
 export default function LastBillsCard() {
     const {lastBills, lastBillsLoading, fetchLastBills} = useBillsStore();
     const [excluded, setExcluded] = useState<Set<BillType>>(new Set());
+    const {isDark} = useTheme();
+    const metaColor = isDark ? colors.text.secondaryDark : colors.text.secondaryLight;
 
     useEffect(() => {
         fetchLastBills();
@@ -123,12 +127,12 @@ export default function LastBillsCard() {
                                         <div className={styles.typeCell}>
                                             <BillTypeTag type={group.type} style={{margin: 0}}/>
                                         </div>
-                                        <span className={styles.meta}>
+                                        <span className={styles.meta} style={{color: metaColor}}>
                                             {group.period ? `${group.period} · ` : ""}{dateRange}
                                             {group.bills.length > 1 ? ` (${group.bills.length} bills)` : ""}
                                         </span>
                                         {group.bills.length === 1 && group.bills[0].comment && (
-                                            <span className={styles.meta}>{group.bills[0].comment}</span>
+                                            <span className={styles.meta} style={{color: metaColor}}>{group.bills[0].comment}</span>
                                         )}
                                         <span className={styles.price}>{fmtPrice(group.totalPrice)}</span>
                                     </div>
@@ -138,7 +142,7 @@ export default function LastBillsCard() {
                     </div>
                     <Divider className={styles.divider}/>
                     <div className={styles.sumRow}>
-                        <Typography.Title level={5} className={styles.sumLabel} style={{cursor: "default", margin: 0}}>Avg
+                        <Typography.Title level={5} className={styles.sumLabel} style={{cursor: "default", margin: 0, color: metaColor}}>Avg
                             / month</Typography.Title>
                         <Tooltip title={tooltipContent} styles={{container: {width: "max-content"}}}>
                             <span className={styles.sumValue}

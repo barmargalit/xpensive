@@ -25,6 +25,9 @@
   /* Table */
   --color-row-warning-bg: rgba(250, 173, 20, 0.12);
 
+  /* Drawer */
+  --color-drawer-mask: rgba(0, 0, 0, 0.25);
+
   /* Semantic */
   --color-pro: #52c41a;
   --color-con: #ff4d4f;

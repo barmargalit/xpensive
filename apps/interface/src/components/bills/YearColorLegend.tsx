@@ -49,7 +49,7 @@ interface Props {
 export default function YearColorLegend({yearsAsc, yearColors, onColorChange}: Props) {
     return (
         <Space style={{flexWrap: "wrap", justifyContent: "center", width: "100%"}} size={10}>
-            {[...yearsAsc].reverse().map((year) => (
+            {[...yearsAsc].map((year) => (
                 <Space key={year} size={4}>
                     <ColorPicker
                         size="small"

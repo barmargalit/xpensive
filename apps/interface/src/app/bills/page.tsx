@@ -28,6 +28,7 @@ import {useResidencesStore} from "@/store/residencesStore";
 import {useResidentsStore} from "@/store/residentsStore";
 import {Bill, BillType} from "@xpensive/types";
 import {useModal} from "@/components/layout/ThemeProvider";
+import {colors} from "@/globals";
 import styles from "./bills.module.css";
 
 interface BillTabProps {
@@ -78,7 +79,10 @@ function BillTab({type, showUsage, groupByResidence, onEdit, onDelete}: BillTabP
                 open={chartOpen}
                 onClose={() => setChartOpen(false)}
                 destroyOnHidden
-                styles={{body: {padding: 16, display: "flex", flexDirection: "column"}}}
+                styles={{
+                    body: {padding: 16, display: "flex", flexDirection: "column"},
+                    mask: {backgroundColor: colors.drawer.mask},
+                }}
             >
                 <Tabs
                     tabPlacement={"start"}

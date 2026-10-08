@@ -23,6 +23,9 @@ export const colors = {
   table: {
     rowWarningBg: "var(--color-row-warning-bg)",
   },
+  drawer: {
+    mask: "var(--color-drawer-mask)",
+  },
   semantic: {
     pro: "var(--color-pro)",
     con: "var(--color-con)",
