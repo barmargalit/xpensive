@@ -1,10 +1,25 @@
 "use client";
 
 import { useEffect } from "react";
-import { Button, Checkbox, DatePicker, Form, Input, InputNumber, Modal, Popconfirm, Select } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Checkbox,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Popconfirm,
+  Select,
+} from "antd";
+import { DeleteOutlined, StopOutlined } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
-import type { BillType, CellularContractData, Contract, InternetContractData } from "@xpensive/types";
+import type {
+  BillType,
+  CellularContractData,
+  Contract,
+  InternetContractData,
+} from "@xpensive/types";
 import { useContractsStore } from "@/store/contractsStore";
 import { useResidencesStore } from "@/store/residencesStore";
 import { useResidentsStore } from "@/store/residentsStore";
@@ -38,7 +53,12 @@ interface FormValues {
   speed_mbps?: number;
 }
 
-export default function ContractModal({ open, contract, defaultType, onClose }: Props) {
+export default function ContractModal({
+  open,
+  contract,
+  defaultType,
+  onClose,
+}: Props) {
   const [form] = Form.useForm<FormValues>();
   const selectedType = Form.useWatch("bill_type", form);
   const callsUnlimited = Form.useWatch("calls_unlimited", form);
@@ -47,8 +67,14 @@ export default function ContractModal({ open, contract, defaultType, onClose }: 
   const isCellular = selectedType === "cellular";
   const isInternet = selectedType === "internet";
   const isEdit = !!contract;
+  // A contract is still active when it has no end date, or its end date is today/future
+  // (mirrors the isEnded logic used by ContractsTable).
+  const isActive =
+    isEdit &&
+    !(contract!.end_date && dayjs(contract!.end_date).isBefore(dayjs(), "day"));
 
-  const { createContract, updateContract, deleteContract } = useContractsStore();
+  const { createContract, updateContract, deleteContract } =
+    useContractsStore();
   const { residences, fetchAll: fetchResidences } = useResidencesStore();
   const { residents, fetchAll: fetchResidents } = useResidentsStore();
 
@@ -58,7 +84,9 @@ export default function ContractModal({ open, contract, defaultType, onClose }: 
     fetchResidents();
 
     if (contract) {
-      const d = contract.data as Partial<CellularContractData & InternetContractData>;
+      const d = contract.data as Partial<
+        CellularContractData & InternetContractData
+      >;
       form.setFieldsValue({
         bill_type: contract.bill_type,
         provider_id: contract.provider_id,
@@ -89,7 +117,9 @@ export default function ContractModal({ open, contract, defaultType, onClose }: 
       data = {
         data_gb: values.data_gb,
         calls_unlimited: values.calls_unlimited ?? false,
-        calls_minutes: values.calls_unlimited ? undefined : values.calls_minutes,
+        calls_minutes: values.calls_unlimited
+          ? undefined
+          : values.calls_minutes,
         sms_unlimited: values.sms_unlimited ?? false,
         sms_count: values.sms_unlimited ? undefined : values.sms_count,
       };
@@ -127,6 +157,13 @@ export default function ContractModal({ open, contract, defaultType, onClose }: 
     onClose();
   };
 
+  const handleEnd = async () => {
+    await updateContract(contract!.id, {
+      end_date: dayjs().format("YYYY-MM-DD"),
+    });
+    onClose();
+  };
+
   return (
     <Modal
       title={isEdit ? "Edit Contract" : "New Contract"}
@@ -136,17 +173,37 @@ export default function ContractModal({ open, contract, defaultType, onClose }: 
       okText="Save"
       destroyOnHidden
       footer={(_, { OkBtn, CancelBtn }) => (
-        <div style={{ display: "flex", width: "100%", justifyContent: isEdit ? "space-between" : "flex-end" }}>
+        <div
+          style={{
+            display: "flex",
+            width: "100%",
+            justifyContent: isEdit ? "space-between" : "flex-end",
+          }}
+        >
           {isEdit && (
-            <Popconfirm
-              title="Delete Contract"
-              description="Are you sure you want to delete this contract? This action cannot be undone."
-              okText="Delete"
-              okButtonProps={{ danger: true }}
-              onConfirm={handleDelete}
-            >
-              <Button danger icon={<DeleteOutlined />}>Delete</Button>
-            </Popconfirm>
+            <div style={{ display: "flex", gap: 8 }}>
+              <Popconfirm
+                title="Delete Contract"
+                description="Are you sure you want to delete this contract? This action cannot be undone."
+                okText="Delete"
+                okButtonProps={{ danger: true }}
+                onConfirm={handleDelete}
+              >
+                <Button danger icon={<DeleteOutlined />}>
+                  Delete
+                </Button>
+              </Popconfirm>
+              {isActive && (
+                <Popconfirm
+                  title="End Contract"
+                  description="End this contract as of today? Its end date will be set to the current date."
+                  okText="End"
+                  onConfirm={handleEnd}
+                >
+                  <Button icon={<StopOutlined />}>End</Button>
+                </Popconfirm>
+              )}
+            </div>
           )}
           <div style={{ display: "flex", gap: 8 }}>
             <CancelBtn />
@@ -156,19 +213,33 @@ export default function ContractModal({ open, contract, defaultType, onClose }: 
       )}
     >
       <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
-        <Form.Item name="bill_type" label="Type" rules={[{ required: true, message: "Required" }]}>
+        <Form.Item
+          name="bill_type"
+          label="Type"
+          rules={[{ required: true, message: "Required" }]}
+        >
           <Select options={BILL_TYPE_OPTIONS} />
         </Form.Item>
 
-        <Form.Item name="provider_id" label="Provider" rules={[{ required: true, message: "Required" }]}>
-          <ProviderSelect billType={selectedType as BillType} placeholder="Select provider" />
+        <Form.Item
+          name="provider_id"
+          label="Provider"
+          rules={[{ required: true, message: "Required" }]}
+        >
+          <ProviderSelect
+            billType={selectedType as BillType}
+            placeholder="Select provider"
+          />
         </Form.Item>
 
         <Form.Item name="residence_id" label="Residence">
           <Select
             allowClear
             placeholder="None"
-            options={residences.map((r) => ({ value: r.id, label: `${r.street}, ${r.city}` }))}
+            options={residences.map((r) => ({
+              value: r.id,
+              label: `${r.street}, ${r.city}`,
+            }))}
           />
         </Form.Item>
 
@@ -180,12 +251,26 @@ export default function ContractModal({ open, contract, defaultType, onClose }: 
           />
         </Form.Item>
 
-        <Form.Item name="monthly_price" label="Monthly Price" rules={[{ required: true, message: "Required" }]}>
-          <NumericInput min={0} precision={2} prefix="₪" style={{ width: "100%" }} />
+        <Form.Item
+          name="monthly_price"
+          label="Monthly Price"
+          rules={[{ required: true, message: "Required" }]}
+        >
+          <NumericInput
+            min={0}
+            precision={2}
+            prefix="₪"
+            style={{ width: "100%" }}
+          />
         </Form.Item>
 
         <div style={{ display: "flex", gap: 24 }}>
-          <Form.Item name="start_date" label="Start Date" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
+          <Form.Item
+            name="start_date"
+            label="Start Date"
+            rules={[{ required: true, message: "Required" }]}
+            style={{ flex: 1 }}
+          >
             <DatePicker format="DD/MM/YY" style={{ width: "100%" }} />
           </Form.Item>
           <Form.Item name="end_date" label="End Date" style={{ flex: 1 }}>
@@ -195,28 +280,72 @@ export default function ContractModal({ open, contract, defaultType, onClose }: 
 
         {isCellular && (
           <>
-            <Form.Item name="data_gb" label="Data (GB)" rules={[{ required: true, message: "Required" }]}>
-              <InputNumber min={0} precision={0} style={{ width: "100%" }} placeholder="e.g. 500" />
+            <Form.Item
+              name="data_gb"
+              label="Data (GB)"
+              rules={[{ required: true, message: "Required" }]}
+            >
+              <InputNumber
+                min={0}
+                precision={0}
+                style={{ width: "100%" }}
+                placeholder="e.g. 500"
+              />
             </Form.Item>
 
             <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
-              <Form.Item name="calls_unlimited" valuePropName="checked" style={{ flex: 1, marginBottom: 0 }}>
+              <Form.Item
+                name="calls_unlimited"
+                valuePropName="checked"
+                style={{ flex: 1, marginBottom: 0 }}
+              >
                 <Checkbox>Unlimited Calls</Checkbox>
               </Form.Item>
               {!callsUnlimited && (
-                <Form.Item name="calls_minutes" label="Call Minutes" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
-                  <InputNumber min={0} precision={0} style={{ width: "100%" }} placeholder="minutes" />
+                <Form.Item
+                  name="calls_minutes"
+                  label="Call Minutes"
+                  rules={[{ required: true, message: "Required" }]}
+                  style={{ flex: 1 }}
+                >
+                  <InputNumber
+                    min={0}
+                    precision={0}
+                    style={{ width: "100%" }}
+                    placeholder="minutes"
+                  />
                 </Form.Item>
               )}
             </div>
 
-            <div style={{ display: "flex", gap: 24, alignItems: "flex-start", marginTop: 8 }}>
-              <Form.Item name="sms_unlimited" valuePropName="checked" style={{ flex: 1, marginBottom: 0 }}>
+            <div
+              style={{
+                display: "flex",
+                gap: 24,
+                alignItems: "flex-start",
+                marginTop: 8,
+              }}
+            >
+              <Form.Item
+                name="sms_unlimited"
+                valuePropName="checked"
+                style={{ flex: 1, marginBottom: 0 }}
+              >
                 <Checkbox>Unlimited SMS</Checkbox>
               </Form.Item>
               {!smsUnlimited && (
-                <Form.Item name="sms_count" label="SMS Count" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
-                  <InputNumber min={0} precision={0} style={{ width: "100%" }} placeholder="messages" />
+                <Form.Item
+                  name="sms_count"
+                  label="SMS Count"
+                  rules={[{ required: true, message: "Required" }]}
+                  style={{ flex: 1 }}
+                >
+                  <InputNumber
+                    min={0}
+                    precision={0}
+                    style={{ width: "100%" }}
+                    placeholder="messages"
+                  />
                 </Form.Item>
               )}
             </div>
@@ -224,13 +353,26 @@ export default function ContractModal({ open, contract, defaultType, onClose }: 
         )}
 
         {isInternet && (
-          <Form.Item name="speed_mbps" label="Speed (Mbps)" rules={[{ required: true, message: "Required" }]}>
-            <InputNumber min={0} precision={0} style={{ width: "100%" }} placeholder="e.g. 1000" />
+          <Form.Item
+            name="speed_mbps"
+            label="Speed (Mbps)"
+            rules={[{ required: true, message: "Required" }]}
+          >
+            <InputNumber
+              min={0}
+              precision={0}
+              style={{ width: "100%" }}
+              placeholder="e.g. 1000"
+            />
           </Form.Item>
         )}
 
         <Form.Item name="comment" label="Comment" style={{ marginTop: 8 }}>
-          <Input.TextArea maxLength={200} showCount autoSize={{ minRows: 2, maxRows: 4 }} />
+          <Input.TextArea
+            maxLength={200}
+            showCount
+            autoSize={{ minRows: 2, maxRows: 4 }}
+          />
         </Form.Item>
       </Form>
     </Modal>
