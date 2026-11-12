@@ -1,6 +1,10 @@
 import { create } from "zustand";
 import { Usage, UsageBounds, BillType } from "@xpensive/types";
-import { usagesApi, CreateUsagePayload, UsageFilterParams } from "@/api/usagesApi";
+import {
+  usagesApi,
+  CreateUsagePayload,
+  UsageFilterParams,
+} from "@/api/usagesApi";
 
 type UsagesByType = Record<BillType, Usage[]>;
 type LoadingByType = Record<BillType, boolean>;
@@ -16,15 +20,24 @@ interface UsagesState {
 }
 
 const emptyUsages = (): UsagesByType =>
-  Object.values(BillType).reduce((acc, t) => ({ ...acc, [t]: [] }), {} as UsagesByType);
+  Object.values(BillType).reduce(
+    (acc, t) => ({ ...acc, [t]: [] }),
+    {} as UsagesByType,
+  );
 
 const emptyLoading = (): LoadingByType =>
-  Object.values(BillType).reduce((acc, t) => ({ ...acc, [t]: false }), {} as LoadingByType);
+  Object.values(BillType).reduce(
+    (acc, t) => ({ ...acc, [t]: false }),
+    {} as LoadingByType,
+  );
 
 const emptyBounds = (): BoundsByType =>
-  Object.values(BillType).reduce((acc, t) => ({ ...acc, [t]: null }), {} as BoundsByType);
+  Object.values(BillType).reduce(
+    (acc, t) => ({ ...acc, [t]: null }),
+    {} as BoundsByType,
+  );
 
-export const useUsagesStore = create<UsagesState>((set) => ({
+export const useUsagesStore = create<UsagesState>((set, get) => ({
   usages: emptyUsages(),
   loading: emptyLoading(),
   bounds: emptyBounds(),
@@ -55,6 +68,10 @@ export const useUsagesStore = create<UsagesState>((set) => ({
         },
       }));
     }
+    // Refresh bounds for each affected type so the date range picker
+    // reflects the newly imported dates (first/last entry).
+    const affectedTypes = [...new Set(created.map((u) => u.type as BillType))];
+    await Promise.all(affectedTypes.map((type) => get().fetchBounds(type)));
     return created;
   },
 }));
